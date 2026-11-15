@@ -1394,16 +1394,21 @@
           });
         }
 
-        // Select Item on Click/Tap
-        el.addEventListener('click', (e) => {
+el.addEventListener('click', (e) => {
           e.stopPropagation();
           if (state.selectedId !== ann.id) {
             state.selectedId = ann.id;
-            if (ann.type === 'text') {
-              state.focusTextId = ann.id;
-            }
             updatePropertiesBar();
-            renderAnnotationsLayer();
+            
+            // Only re-render for images/whiteouts (to show resize handles); 
+            // skip full re-render for text so the mobile keyboard stays open.
+            if (ann.type !== 'text') {
+              renderAnnotationsLayer();
+            } else {
+              document.querySelectorAll('.pdf-annotation').forEach((node) => {
+                node.classList.toggle('selected', node.dataset.id === ann.id);
+              });
+            }
           }
         });
 
