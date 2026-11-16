@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Free Online Word Editor &amp; DOCX to PDF Converter | OrioHub</title>
+  <meta name="description" content="Edit Word documents (.docx, .doc, .txt, .html) directly in your browser and convert DOCX to PDF for free. 100% client-side, private, fast, and works on desktop and mobile." />
+  <meta name="keywords" content="free online word editor, docx to pdf converter, edit docx online, word processor online, convert word to pdf free, browser word editor, oriohub" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://word-editor.oriohub.com/" />
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            apexDark: '#00456c',
+            apexBlue: '#2563EB',
+            apexBlueHover: '#1d4ed8',
+            toolbarBg: '#f1f5f9',
+            toolbarHeader: '#132245',
+            pageBg: '#f8fafc',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Client-Side CDN Libraries for DOCX & PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+
+  <style>
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .a4-sheet {
+      width: 100%;
+      min-height: 1000px;
+      background: #ffffff;
+      outline: none;
+      word-break: break-word;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #0f172a;
+    }
+
+    .a4-sheet:empty::before {
+      content: "Start typing your document content here...";
+      color: #94a3b8;
+      pointer-events: none;
+    }
+
+    .a4-sheet h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+    .a4-sheet h2 { font-size: 21px; font-weight: 700; margin-top: 18px; margin-bottom: 10px; }
+    .a4-sheet h3 { font-size: 17px; font-weight: 600; margin-top: 14px; margin-bottom: 8px; }
+    .a4-sheet p { margin-bottom: 12px; }
+    .a4-sheet ul, .a4-sheet ol { margin-left: 24px; margin-bottom: 12px; }
+    .a4-sheet img { max-width: 100%; height: auto; border-radius: 4px; margin: 10px 0; }
+    .a4-sheet table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .a4-sheet th, .a4-sheet td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+    .a4-sheet th { background-color: #f1f5f9; font-weight: 600; }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Top Header (White Background & Black Text) -->
+  <header class="bg-white text-black sticky top-0 z-50 border-b border-slate-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-[#2563EB] rounded-lg flex items-center justify-center font-black text-xl tracking-tighter text-white shadow-xs">O</div>
+        <span class="font-bold text-lg tracking-tight text-black">OrioHub <span class="text-[#2563EB] font-semibold text-sm ml-1">Word Editor</span></span>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-black">
+        <a href="https://oriohub.com" class="text-black hover:text-[#2563EB] transition-colors">Home</a>
+        <a href="https://pdf-editor.oriohub.com" class="text-black hover:text-[#2563EB] transition-colors">PDF Editor</a>
+        <a href="#" class="text-black font-bold underline decoration-[#2563EB] decoration-2 underline-offset-4">Word Editor</a>
+        <a href="https://oriohub.com/tools" class="text-black hover:text-[#2563EB] transition-colors">Tools</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="#editorWorkspace" class="bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all">
+          Try Free
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="py-12 sm:py-16 px-4 text-center max-w-4xl mx-auto">
+    <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+      Edit Word Documents Online, Free &amp; Private
+    </h1>
+    <p class="text-base sm:text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
+      Write, Format, Add Color &amp; Download as Word or PDF Instantly - No Sign-up
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-8">
+      <button type="button" id="heroChooseFileBtn" class="bg-[#2563EB] hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm sm:text-base">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Choose Word File
+      </button>
+
+      <a href="#editorWorkspace" id="heroTryBlankBtn" class="bg-[#2563EB] hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm transition-all text-sm sm:text-base">
+        Try Blank Document
+      </a>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-slate-600">
+      <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">
+        <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        100% Free
+      </span>
+      <span class="inline-flex items-center gap-1.5 bg-blue-50 text-[#2563EB] px-3 py-1 rounded-full border border-blue-200">
+        <svg class="w-4 h-4 text-[#2563EB]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        No Sign-up
+      </span>
+      <span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 px-3 py-1 rounded-full border border-amber-200">
+        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+        Private - Files Never Upload
+      </span>
+    </div>
+  </section>
+
+  <!-- Hidden File Input for Uploads -->
+  <input type="file" id="mainFileInput" accept=".docx,.doc,.txt,.html,.htm" class="hidden" />
+
+  <!-- Unified Single Editor Workspace Section -->
+  <section id="editorWorkspace" class="max-w-4xl mx-auto w-full px-4 sm:px-6 pb-12">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col">
+      
+      <!-- Top Action & Filename Bar (Header of Toolbar in #132245) -->
+      <div class="bg-[#132245] text-white px-4 py-3 flex flex-wrap items-center justify-between gap-4 border-b border-[#1f3566]">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Filename:</span>
+          <div class="flex items-center bg-[#0c162e] border border-[#243b70] rounded-lg px-2.5 h-8">
+            <input type="text" id="docFilename" value="my-document" class="bg-transparent border-none text-xs font-medium text-white w-36 sm:w-48 outline-none" placeholder="Filename" />
+            <span class="text-xs text-slate-300 select-none">.docx</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnExportDocx" class="bg-[#2563EB] hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-lg text-xs shadow-sm transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download .DOCX
+          </button>
+
+          <button type="button" id="btnExportPdf" class="bg-[#2563EB] hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-lg text-xs shadow-sm transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Download .PDF
+          </button>
+
+          <button type="button" id="btnClearStorage" class="bg-[#2563EB] hover:bg-blue-700 text-white font-medium py-1.5 px-2.5 rounded-lg text-xs transition-all">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Integrated Formatting Toolbar (#f1f5f9 Background & Black Text) -->
+      <div class="bg-[#f1f5f9] border-b border-slate-200 p-2.5 flex flex-wrap items-center gap-1.5 text-black">
+        <button type="button" class="toolbar-btn px-2.5 py-1.5 rounded-lg bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs flex items-center gap-1 shadow-2xs" id="btnSelectMode">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+          Select
+        </button>
+
+        <div class="h-5 w-px bg-slate-300 mx-1"></div>
+
+        <button type="button" class="toolbar-btn p-1.5 hover:bg-slate-200 rounded-lg text-black text-xs font-semibold" data-cmd="undo" title="Undo">&#8630;</button>
+        <button type="button" class="toolbar-btn p-1.5 hover:bg-slate-200 rounded-lg text-black text-xs font-semibold" data-cmd="redo" title="Redo">&#8631;</button>
+
+        <div class="h-5 w-px bg-slate-300 mx-1"></div>
+
+        <select id="selectHeading" class="h-7 px-2 rounded-lg border border-slate-300 bg-white text-xs font-medium text-black outline-none cursor-pointer">
+          <option value="P">Normal</option>
+          <option value="H1">Heading 1</option>
+          <option value="H2">Heading 2</option>
+          <option value="H3">Heading 3</option>
+        </select>
+
+        <select id="selectFontFamily" class="h-7 px-2 rounded-lg border border-slate-300 bg-white text-xs font-medium text-black outline-none cursor-pointer">
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="Calibri, sans-serif">Calibri</option>
+          <option value="'Courier New', monospace">Courier New</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+        </select>
+
+        <select id="selectFontSize" class="h-7 px-2 rounded-lg border border-slate-300 bg-white text-xs font-medium text-black outline-none cursor-pointer">
+          <option value="12px">12px</option>
+          <option value="14px">14px</option>
+          <option value="15px" selected>15px</option>
+          <option value="16px">16px</option>
+          <option value="18px">18px</option>
+          <option value="22px">22px</option>
+          <option value="28px">28px</option>
+        </select>
+
+        <div class="h-5 w-px bg-slate-300 mx-1"></div>
+
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg font-bold text-black text-xs flex items-center justify-center" data-cmd="bold" title="Bold">B</button>
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg italic font-serif text-black text-xs flex items-center justify-center" data-cmd="italic" title="Italic">I</button>
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg underline text-black text-xs flex items-center justify-center" data-cmd="underline" title="Underline">U</button>
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg line-through text-black text-xs flex items-center justify-center" data-cmd="strikeThrough" title="Strikethrough">S</button>
+
+        <div class="relative flex items-center justify-center w-7 h-7 hover:bg-slate-200 rounded-lg cursor-pointer" title="Text Color">
+          <span class="font-bold text-xs text-black">A</span>
+          <input type="color" id="inputForeColor" value="#0f172a" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+        </div>
+
+        <div class="h-5 w-px bg-slate-300 mx-1"></div>
+
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg text-black flex items-center justify-center text-xs" data-cmd="justifyLeft" title="Align Left">&#8676;</button>
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg text-black flex items-center justify-center text-xs" data-cmd="justifyCenter" title="Align Center">&#8855;</button>
+        <button type="button" class="toolbar-btn w-7 h-7 hover:bg-slate-200 rounded-lg text-black flex items-center justify-center text-xs" data-cmd="justifyRight" title="Align Right">&#8677;</button>
+
+        <button type="button" class="toolbar-btn px-2 h-7 hover:bg-slate-200 rounded-lg text-black font-semibold text-xs flex items-center justify-center" data-cmd="insertUnorderedList" title="Bulleted List">&bull; List</button>
+        <button type="button" class="toolbar-btn px-2 h-7 hover:bg-slate-200 rounded-lg text-black font-semibold text-xs flex items-center justify-center" data-cmd="insertOrderedList" title="Numbered List">1. List</button>
+
+        <div class="h-5 w-px bg-slate-300 mx-1"></div>
+
+        <button type="button" id="btnInsertImage" class="toolbar-btn px-2 h-7 hover:bg-slate-200 rounded-lg text-xs font-semibold text-black flex items-center gap-1" title="Insert Image">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Image
+        </button>
+        <input type="file" id="imageFileInput" accept="image/*" class="hidden" />
+
+        <button type="button" id="btnInsertTable" class="toolbar-btn px-2 h-7 hover:bg-slate-200 rounded-lg text-xs font-semibold text-black flex items-center gap-1" title="Insert Table">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Table
+        </button>
+      </div>
+
+      <!-- Single A4 Paper Canvas View -->
+      <div class="p-8 sm:p-12 bg-slate-100/60 flex justify-center overflow-x-auto">
+        <div id="editor" class="a4-sheet p-12 shadow-sm rounded-md" contenteditable="true" spellcheck="true"></div>
+      </div>
+
+      <!-- Footer Status Bar Inside Card -->
+      <div class="bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between text-xs text-slate-500 font-medium">
+        <div class="flex items-center gap-4">
+          <span id="wordCount">0 words</span>
+          <span id="charCount">0 characters</span>
+        </div>
+        <div id="saveStatus" class="flex items-center gap-1.5 text-emerald-600 font-semibold">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Auto-saved locally
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-slate-200">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Everything You Need to Edit Word Documents</h2>
+      <p class="mt-2 text-sm sm:text-base text-slate-600">Built for speed, precision, and privacy across desktop, tablet, and mobile devices.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center font-bold mb-3">T</div>
+        <h3 class="font-bold text-slate-900">Rich Text &amp; Formatting</h3>
+        <p class="mt-1.5 text-xs sm:text-sm text-slate-600">Write and style documents effortlessly with custom fonts, headings, colors, lists, and alignment controls.</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold mb-3">🖼️</div>
+        <h3 class="font-bold text-slate-900">Insert Images &amp; Tables</h3>
+        <p class="mt-1.5 text-xs sm:text-sm text-slate-600">Embed photos, signatures, or logos directly into your document and organize data cleanly with structured tables.</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold mb-3">📄</div>
+        <h3 class="font-bold text-slate-900">Instant DOCX &amp; PDF Export</h3>
+        <p class="mt-1.5 text-xs sm:text-sm text-slate-600">Open existing .docx files, edit them in real time, and download your finished work as either Word (.docx) or A4 PDF.</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold mb-3">🔒</div>
+        <h3 class="font-bold text-slate-900">100% Client-Side Privacy</h3>
+        <p class="mt-1.5 text-xs sm:text-sm text-slate-600">Your documents never leave your device. All parsing, formatting, and file generation happen locally in your browser.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-12 border-t border-slate-200">
+    <h2 class="text-2xl font-bold text-slate-900 text-center mb-8">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-slate-800 text-base mb-2">Is this online Word editor really free?</h3>
+        <p class="text-sm text-slate-600">Yes! OrioHub Word Editor is 100% free with no hidden fees, subscriptions, or sign-up requirements.</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-slate-800 text-base mb-2">Are my files secure and private?</h3>
+        <p class="text-sm text-slate-600">Absolutely. Everything runs entirely inside your browser using client-side JavaScript. Your documents are never uploaded to any external servers.</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-slate-800 text-base mb-2">Can I convert Word documents (.docx) to PDF?</h3>
+        <p class="text-sm text-slate-600">Yes, you can open existing Word files, edit them seamlessly, and download them instantly as either a new .docx file or a formatted .pdf document.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex-col items-center justify-center gap-3">
+    <div class="w-10 h-10 border-4 border-white/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+    <div id="loadingText" class="text-white font-semibold text-sm">Processing document...</div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
+    &copy; <span id="currentYear"></span> OrioHub &bull; Free Online Word Editor &amp; DOCX to PDF Converter. All files remain 100% private in your browser.
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const editor = document.getElementById("editor");
+      const wordCountEl = document.getElementById("wordCount");
+      const charCountEl = document.getElementById("charCount");
+      const saveStatusEl = document.getElementById("saveStatus");
+      const docFilenameInput = document.getElementById("docFilename");
+      const loadingOverlay = document.getElementById("loadingOverlay");
+      const loadingText = document.getElementById("loadingText");
+      const toastContainer = document.getElementById("toastContainer");
+
+      const STORAGE_CONTENT_KEY = "oriohub_word_editor_unified_v1";
+      const STORAGE_NAME_KEY = "oriohub_word_editor_unified_name_v1";
+
+      document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+      function showToast(message) {
+        const toast = document.createElement("div");
+        toast.className = "bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg transform translate-y-2 opacity-0 transition-all duration-200 pointer-events-auto";
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove("translate-y-2", "opacity-0"));
+        setTimeout(() => {
+          toast.classList.add("translate-y-2", "opacity-0");
+          setTimeout(() => toast.remove(), 250);
+        }, 2600);
+      }
+
+      function setLoading(isLoading, text = "Processing...") {
+        loadingText.textContent = text;
+        if (isLoading) {
+          loadingOverlay.classList.remove("hidden");
+          loadingOverlay.classList.add("flex");
+        } else {
+          loadingOverlay.classList.add("hidden");
+          loadingOverlay.classList.remove("flex");
+        }
+      }
+
+      document.querySelectorAll(".toolbar-btn[data-cmd]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const cmd = btn.getAttribute("data-cmd");
+          editor.focus();
+          document.execCommand(cmd, false, null);
+          updateStats();
+          triggerAutoSave();
+        });
+      });
+
+      document.getElementById("selectHeading").addEventListener("change", (e) => {
+        const tag = e.target.value;
+        editor.focus();
+        document.execCommand("formatBlock", false, `<${tag}>`);
+        updateStats();
+        triggerAutoSave();
+      });
+
+      document.getElementById("selectFontFamily").addEventListener("change", (e) => {
+        const font = e.target.value;
+        editor.focus();
+        document.execCommand("fontName", false, font);
+        triggerAutoSave();
+      });
+
+      document.getElementById("selectFontSize").addEventListener("change", (e) => {
+        const size = e.target.value;
+        editor.focus();
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          document.execCommand("fontSize", false, "7");
+          editor.querySelectorAll('font[size="7"]').forEach(el => {
+            const span = document.createElement("span");
+            span.style.fontSize = size;
+            span.innerHTML = el.innerHTML;
+            el.replaceWith(span);
+          });
+        }
+        triggerAutoSave();
+      });
+
+      document.getElementById("inputForeColor").addEventListener("input", (e) => {
+        const color = e.target.value;
+        editor.focus();
+        document.execCommand("foreColor", false, color);
+        triggerAutoSave();
+      });
+
+      const imageFileInput = document.getElementById("imageFileInput");
+      document.getElementById("btnInsertImage").addEventListener("click", () => {
+        editor.focus();
+        imageFileInput.click();
+      });
+
+      imageFileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          editor.focus();
+          const img = document.createElement("img");
+          img.src = event.target.result;
+          img.style.maxWidth = "100%";
+          
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            range.insertNode(img);
+          } else {
+            editor.appendChild(img);
+          }
+          updateStats();
+          triggerAutoSave();
+          showToast("Image inserted successfully");
+        };
+        reader.readAsDataURL(file);
+        imageFileInput.value = "";
+      });
+
+      document.getElementById("btnInsertTable").addEventListener("click", () => {
+        editor.focus();
+        const tableHtml = `
+          <table style="width:100%; border-collapse:collapse; margin:14px 0;">
+            <thead>
+              <tr>
+                <th style="border:1px solid #cbd5e1; padding:8px 12px; background:#f1f5f9;">Header 1</th>
+                <th style="border:1px solid #cbd5e1; padding:8px 12px; background:#f1f5f9;">Header 2</th>
+                <th style="border:1px solid #cbd5e1; padding:8px 12px; background:#f1f5f9;">Header 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px 12px;">Cell 1</td>
+                <td style="border:1px solid #cbd5e1; padding:8px 12px;">Cell 2</td>
+                <td style="border:1px solid #cbd5e1; padding:8px 12px;">Cell 3</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px 12px;">Cell 4</td>
+                <td style="border:1px solid #cbd5e1; padding:8px 12px;">Cell 5</td>
+                <td style="border:1px solid #cbd5e1; padding:8px 12px;">Cell 6</td>
+              </tr>
+            </tbody>
+          </table>
+          <p><br></p>
+        `;
+        document.execCommand("insertHTML", false, tableHtml);
+        updateStats();
+        triggerAutoSave();
+        showToast("Table inserted");
+      });
+
+      function updateStats() {
+        const text = editor.innerText || "";
+        const cleaned = text.trim();
+        const words = cleaned ? cleaned.split(/\s+/).length : 0;
+        const chars = cleaned.length;
+
+        wordCountEl.textContent = `${words} ${words === 1 ? "word" : "words"}`;
+        charCountEl.textContent = `${chars} ${chars === 1 ? "character" : "characters"}`;
+      }
+
+      let saveTimer = null;
+      function triggerAutoSave() {
+        saveStatusEl.innerHTML = `<span class="text-slate-400">Saving...</span>`;
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          try {
+            localStorage.setItem(STORAGE_CONTENT_KEY, editor.innerHTML);
+            localStorage.setItem(STORAGE_NAME_KEY, docFilenameInput.value);
+            saveStatusEl.innerHTML = `
+              <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span class="text-emerald-600">Auto-saved locally</span>
+            `;
+          } catch (err) {
+            saveStatusEl.innerHTML = `<span class="text-amber-600">Storage full</span>`;
+          }
+        }, 500);
+      }
+
+      editor.addEventListener("input", () => {
+        updateStats();
+        triggerAutoSave();
+      });
+
+      docFilenameInput.addEventListener("input", triggerAutoSave);
+
+      (function restoreSession() {
+        try {
+          const savedName = localStorage.getItem(STORAGE_NAME_KEY);
+          if (savedName) docFilenameInput.value = savedName;
+
+          const savedHtml = localStorage.getItem(STORAGE_CONTENT_KEY);
+          if (savedHtml) {
+            editor.innerHTML = savedHtml;
+          }
+        } catch (e) {}
+        updateStats();
+      })();
+
+      const mainFileInput = document.getElementById("mainFileInput");
+      
+      document.getElementById("heroChooseFileBtn").addEventListener("click", () => {
+        mainFileInput.click();
+      });
+
+      mainFileInput.addEventListener("change", async (e) => {
+        if (e.target.files && e.target.files[0]) {
+          await handleUploadedFile(e.target.files[0]);
+          mainFileInput.value = "";
+        }
+      });
+
+      async function handleUploadedFile(file) {
+        const name = file.name;
+        const ext = name.split(".").pop().toLowerCase();
+        docFilenameInput.value = name.replace(/\.[^/.]+$/, "");
+
+        setLoading(true, `Opening "${name}"...`);
+
+        try {
+          if (ext === "docx") {
+            const buffer = await file.arrayBuffer();
+            const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
+            editor.innerHTML = result.value || "<p></p>";
+            showToast("DOCX file loaded successfully!");
+          } else if (ext === "txt") {
+            const text = await file.text();
+            editor.innerHTML = text.split(/\r?\n/).map(line => `<p>${line ? escapeHtml(line) : '<br>'}</p>`).join("");
+            showToast("Text file loaded!");
+          } else if (ext === "html" || ext === "htm") {
+            editor.innerHTML = await file.text();
+            showToast("HTML file loaded!");
+          } else {
+            showToast("Unsupported format. Please upload .docx, .txt or .html");
+          }
+          updateStats();
+          triggerAutoSave();
+        } catch (err) {
+          console.error(err);
+          showToast("Error reading file.");
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      document.getElementById("heroTryBlankBtn").addEventListener("click", () => {
+        editor.focus();
+      });
+
+      function getSanitizedFilename(ext) {
+        const raw = (docFilenameInput.value || "document").trim();
+        const safe = raw.replace(/[<>:"/\\|?*]+/g, "_") || "document";
+        return `${safe}.${ext}`;
+      }
+
+      document.getElementById("btnExportDocx").addEventListener("click", () => {
+        const filename = getSanitizedFilename("docx");
+        setLoading(true, "Generating Word (.docx)...");
+
+        setTimeout(() => {
+          try {
+            const contentHtml = editor.innerHTML || "<p></p>";
+            const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:Arial;font-size:11pt;}</style></head><body>${contentHtml}</body></html>`;
+            
+            if (typeof htmlDocx !== "undefined" && htmlDocx.asBlob) {
+              const blob = htmlDocx.asBlob(fullHtml);
+              downloadBlob(blob, filename);
+              showToast(`Downloaded ${filename}`);
+            } else {
+              throw new Error("html-docx library unavailable");
+            }
+          } catch (err) {
+            console.error(err);
+            showToast("DOCX Export failed");
+          } finally {
+            setLoading(false);
+          }
+        }, 100);
+      });
+
+      document.getElementById("btnExportPdf").addEventListener("click", async () => {
+        const filename = getSanitizedFilename("pdf");
+        setLoading(true, "Rendering PDF...");
+
+        try {
+          const opt = {
+            margin: [10, 10, 10, 10],
+            filename: filename,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+          };
+
+          await html2pdf().set(opt).from(editor).save();
+          showToast(`Downloaded ${filename}`);
+        } catch (err) {
+          console.error(err);
+          showToast("PDF Export failed. Opening print dialog...");
+          window.print();
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
+
+      document.getElementById("btnClearStorage").addEventListener("click", () => {
+        if (confirm("Clear editor and reset draft?")) {
+          localStorage.removeItem(STORAGE_CONTENT_KEY);
+          localStorage.removeItem(STORAGE_NAME_KEY);
+          editor.innerHTML = "";
+          docFilenameInput.value = "my-document";
+          updateStats();
+          showToast("Editor reset");
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
